@@ -8,7 +8,6 @@ categories_bp = Blueprint("categories", __name__, url_prefix="/categories")
 @categories_bp.get("/")
 def get_categories():
     categories = Category.query.all()
-    print(categories)
     result = [
         {
             "id": c.id,
