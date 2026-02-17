@@ -1,0 +1,13 @@
+name,type
+breakfast,meal_type
+snack,meal_type
+main_course,meal_type
+dessert,meal_type
+soup,meal_type
+side_dish,meal_type
+drink,meal_type
+carb_based,nutritional_profile
+protein_based,nutritional_profile
+fruits_and_veggies,nutritional_profile
+refreshing,temperature
+cozy,temperature
