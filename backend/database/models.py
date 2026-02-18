@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import Enum
+from sqlalchemy import Enum, CheckConstraint
 from database.extensions import db
 
 class CategoryType(enum.Enum):
@@ -18,7 +18,7 @@ class Category(db.Model):
 class Ingredient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
-
+    # TODO: add ingredient status like optional/necessary/substitutable
 
 class RecipeIngredient(db.Model):
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), primary_key=True)
@@ -38,6 +38,7 @@ class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
     instructions = db.Column(db.Text, nullable=False)
+    cooking_time = db.Column(db.Integer, CheckConstraint('cooking_time <= 600'), nullable=False) # 600 mins = 10 hours max
     ingredients = db.relationship(
         'Ingredient',
         secondary='recipe_ingredient',
