@@ -16,9 +16,9 @@ def create_app():
 
     # for first-time db creation, uncomment these line
     # with app.app_context():
-    #     import database.models
-    #     db.create_all()
-    #     define_static_categories()
+    #    import database.models
+    #    db.create_all()
+    #    define_static_categories()
 
     return app
 
