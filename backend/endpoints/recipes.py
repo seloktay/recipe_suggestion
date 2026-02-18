@@ -3,6 +3,8 @@ from database.extensions import db
 from database.models import Recipe, Ingredient, Category, RecipeIngredient, CategoryType
 from sqlalchemy.orm import selectinload
 
+from backend.endpoints.categories import categories_bp
+
 recipes_bp = Blueprint("recipes", __name__, url_prefix="/recipes")
 
 
@@ -11,6 +13,7 @@ def list_recipes():
     recipes = Recipe.query.options(selectinload(Recipe.images)).all()
     result = [
         {
+            "id": r.id,
             "cooking_time": r.cooking_time,
             "name": r.name,
             "images": r.images,
@@ -25,7 +28,7 @@ def list_recipes():
     return jsonify(result)
 
 
-@recipes_bp.route("", methods=["POST"])
+@recipes_bp.route("/", methods=["POST"])
 def create_recipe():
     data = request.get_json()
     category_ids = data.get("category_ids", [])
@@ -83,6 +86,37 @@ def create_recipe():
         ]
     }), 201
 
+@recipes_bp.route("/<recipe_id>", methods=["PUT"])
+def update_recipe(recipe_id):
+    data = request.get_json()
+    recipe = Recipe.query.get_or_404(recipe_id)
+    category_ids = data.get("category_ids",[])
+    if category_ids:
+        categories = Category.query.filter(
+            Category.id.in_(data["category_ids"])
+        ).all()
+        recipe.categories = categories
+
+    if "ingredients" in data:
+        incoming = {i["id"]: i["quantity"] for i in data["ingredients"]}
+        existing = {ri.ingredient_id: ri for ri in recipe.ingredients}
+        for ingredient_id, quantity in incoming.items():
+            # if ingredient already exists, update it
+            if ingredient_id in existing:
+                existing[ingredient_id].quantity = quantity
+            else:
+                # if ingredient is new, add to recipe
+                new_item = RecipeIngredient(
+                    recipe_id=recipe.id,
+                    ingredient_id=ingredient_id,
+                    quantity=quantity
+                )
+                db.session.add(new_item)
+        # delete removed ingredients
+        for ingredient_id, ri in existing.items():
+            if ingredient_id not in incoming:
+                db.session.delete(ri)
+
 
 @recipes_bp.delete("/<int:recipe_id>")
 def delete_recipe(recipe_id):
@@ -90,3 +124,4 @@ def delete_recipe(recipe_id):
     db.session.delete(recipe)
     db.commit()
     return jsonify({"message": "Recipe deleted"})
+
