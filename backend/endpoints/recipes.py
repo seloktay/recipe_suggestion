@@ -90,6 +90,9 @@ def create_recipe():
 def update_recipe(recipe_id):
     data = request.get_json()
     recipe = Recipe.query.get_or_404(recipe_id)
+    recipe.name = data["name"]
+    recipe.instructions = data["instructions"]
+    recipe.cooking_time = data["cooking_time"]
     category_ids = data.get("category_ids",[])
     if category_ids:
         categories = Category.query.filter(
@@ -99,7 +102,7 @@ def update_recipe(recipe_id):
 
     if "ingredients" in data:
         incoming = {i["id"]: i["quantity"] for i in data["ingredients"]}
-        existing = {ri.ingredient_id: ri for ri in recipe.ingredients}
+        existing = {ri.ingredient_id: ri for ri in recipe.recipe_ingredients}
         for ingredient_id, quantity in incoming.items():
             # if ingredient already exists, update it
             if ingredient_id in existing:
@@ -116,6 +119,8 @@ def update_recipe(recipe_id):
         for ingredient_id, ri in existing.items():
             if ingredient_id not in incoming:
                 db.session.delete(ri)
+    db.session.commit()
+    return jsonify({"message": f"Recipe updated"})
 
 
 @recipes_bp.delete("/<int:recipe_id>")
