@@ -14,9 +14,7 @@ def list_recipes():
             "cooking_time": r.cooking_time,
             "name": r.name,
             "images": r.images,
-            "categories": [{
-                "name": c.name
-            } for c in r.categories],
+            "categories": [c.name for c in r.categories],
             "ingredients": [{
                 "name": i.ingredient.name,
                 "quantity": i.quantity
