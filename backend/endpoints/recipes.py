@@ -1,7 +1,12 @@
 from flask import Blueprint, jsonify, request
 from database.extensions import db
-from database.models import Recipe, Ingredient, Category, RecipeIngredient, CategoryType
+from database.models import Recipe, Ingredient, Category, RecipeIngredient, CategoryType, RecipeImage
 from sqlalchemy.orm import selectinload
+import uuid
+import os
+from flask import request, jsonify, current_app
+from werkzeug.utils import secure_filename
+import json
 
 from backend.endpoints.categories import categories_bp
 
@@ -16,7 +21,7 @@ def list_recipes():
             "id": r.id,
             "cooking_time": r.cooking_time,
             "name": r.name,
-            "images": r.images,
+            "images": [img.image_path for img in r.images],
             "categories": [c.name for c in r.categories],
             "ingredients": [{
                 "name": i.ingredient.name,
@@ -30,9 +35,11 @@ def list_recipes():
 
 @recipes_bp.route("/", methods=["POST"])
 def create_recipe():
-    data = request.get_json()
-    category_ids = data.get("category_ids", [])
-    ingredients = data.get("ingredients", [])
+    category_ids = json.loads(request.form.get("category_ids", []))
+    ingredients = json.loads(request.form.get("ingredients", []))
+    name = request.form.get("name")
+    cooking_time = request.form.get("cooking_time")
+    instructions = request.form.get("instructions")
 
     categories = []
     if category_ids:
@@ -41,11 +48,12 @@ def create_recipe():
         ).all()
 
     recipe = Recipe(
-        name=data["name"],
-        cooking_time=data.get("cooking_time"),
-        instructions=data.get("instructions")
+        name=name,
+        cooking_time=cooking_time,
+        instructions=instructions
     )
     db.session.add(recipe)
+    db.session.flush()
     recipe.categories = categories
 
     if ingredients:
@@ -65,6 +73,21 @@ def create_recipe():
                     quantity=ingredient_map[ingredient.id]
                 )
             )
+
+    files = request.files.getlist("images")
+    upload_folder = os.path.join(current_app.root_path, "uploads")
+    os.makedirs(upload_folder, exist_ok=True)
+
+    for file in files:
+        filename = secure_filename(file.filename)
+
+        unique_filename = f"{uuid.uuid4()}_{filename}"
+        filepath = os.path.join(upload_folder, unique_filename)
+
+        file.save(filepath)
+        recipe.images.append(
+            RecipeImage(image_path=f"/uploads/{unique_filename}")
+        )
 
     db.session.commit()
 
