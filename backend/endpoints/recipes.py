@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint
 from database.extensions import db
 from database.models import Recipe, Ingredient, Category, RecipeIngredient, CategoryType, RecipeImage
 from sqlalchemy.orm import selectinload
@@ -7,8 +7,6 @@ import os
 from flask import request, jsonify, current_app
 from werkzeug.utils import secure_filename
 import json
-
-from backend.endpoints.categories import categories_bp
 
 recipes_bp = Blueprint("recipes", __name__, url_prefix="/recipes")
 
