@@ -144,10 +144,10 @@ def update_recipe(recipe_id):
     return jsonify({"message": f"Recipe updated"})
 
 
-@recipes_bp.delete("/<int:recipe_id>")
+@recipes_bp.delete("/<recipe_id>")
 def delete_recipe(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
     db.session.delete(recipe)
-    db.commit()
+    db.session.commit()
     return jsonify({"message": "Recipe deleted"})
 

@@ -1,9 +1,9 @@
 import api from "./axios";
 
-export const getRecipes = () => api.get("/recipes");
+export const getRecipes = () => api.get("/recipes/");
 
 export const addRecipe = (data) =>
-  api.post("/recipes", data);
+  api.post("/recipes/", data);
 
 export const updateRecipe = (id, data) =>
   api.put(`/recipes/${id}`, data);
