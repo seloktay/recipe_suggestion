@@ -7,7 +7,7 @@ ingredients_bp = Blueprint("ingredients", __name__, url_prefix="/ingredients")
 
 @ingredients_bp.get("/")
 def get_ingredients():
-    ingredients = Ingredient.query.all()
+    ingredients = Ingredient.query.order_by(Ingredient.name).all()
     result = [
         {
             "id": i.id,

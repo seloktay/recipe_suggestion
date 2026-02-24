@@ -1,6 +1,6 @@
 import api from "./axios";
 
-export const getIngredients = () => api.get("/ingredients");
+export const getIngredients = () => api.get("/ingredients/");
 
 export const addIngredient = (data) =>
   api.post("/ingredients/", data);

@@ -1,17 +1,20 @@
-import { useState } from "react";
-
-const mockIngredients = [
-  { id: 1, name: "Egg" },
-  { id: 2, name: "Milk" },
-  { id: 3, name: "Flour" },
-  { id: 4, name: "Cheese" },
-  { id: 5, name: "Tomato" },
-];
+import { useState, useEffect } from "react";
+import { getIngredients } from "../api/ingredientsApi";
 
 function MultiSelect({ selected, setSelected }) {
+    const [ingredients, setIngredients] = useState([]);
+    useEffect(() => {
+           const loadIngredients = async () => {
+               const res = await getIngredients();
+               console.log
+               setIngredients(res.data);
+           };
+           loadIngredients()
+        }, [])
+
   const [query, setQuery] = useState("");
 
-  const filtered = mockIngredients.filter((i) =>
+  const filtered = ingredients.filter((i) =>
     i.name.toLowerCase().includes(query.toLowerCase())
   );
 
