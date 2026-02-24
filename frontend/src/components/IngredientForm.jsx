@@ -14,6 +14,9 @@ function IngredientForm({ onCreated }) {
     <div>
       <input
         value={name}
+        onKeyDown={(e) => {if (e.key === 'Enter')
+            {handleSubmit()}
+        }}
         onChange={(e) => setName(e.target.value)}
       />
       <button onClick={handleSubmit}>Add</button>
