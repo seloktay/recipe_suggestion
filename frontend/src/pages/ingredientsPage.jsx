@@ -5,7 +5,6 @@ import IngredientList from "../components/IngredientList";
 
 function ingredientsPage() {
   const [ingredients, setIngredients] = useState([]);
-  console.log(ingredients)
   const loadIngredients = async () => {
     const res = await getIngredients();
     setIngredients(res.data);
