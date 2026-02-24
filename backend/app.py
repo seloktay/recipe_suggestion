@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from database.extensions import db
 from endpoints.categories import categories_bp
 from endpoints.ingredients import ingredients_bp
@@ -13,6 +14,7 @@ def create_app():
     app.register_blueprint(categories_bp)
     app.register_blueprint(ingredients_bp)
     app.register_blueprint(recipes_bp)
+    CORS(app, origins=["http://localhost:5173"])
 
     # for first-time db creation, uncomment these line
     # with app.app_context():
