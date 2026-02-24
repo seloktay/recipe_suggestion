@@ -1,24 +1,24 @@
 import { useState } from 'react'
 import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import IngredientsPage from "./pages/ingredientsPage"
+import RecipesPage from "./pages/recipesPage"
+import HomePage from "./pages/homePage"
+import Navbar from "./components/Navbar"
+
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+        <BrowserRouter>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/ingredients" element={<IngredientsPage />} />
+            <Route path="/recipes" element={<RecipesPage />} />
+          </Routes>
+        </BrowserRouter>
   )
 }
 
