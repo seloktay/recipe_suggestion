@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { getRecipes } from "../api/recipesApi";
+import { getCategories } from "../api/categoriesApi";
+import { getIngredients } from "../api/ingredientsApi";
 import RecipeModal from "../components/RecipeModal";
 import RecipeList from "../components/RecipeList";
 import {
@@ -22,15 +24,15 @@ function recipesPage() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // Fetch categories & ingredients
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const categoriesRes = await axios.get("http://localhost:5000/categories");
-        const ingredientsRes = await axios.get("http://localhost:5000/ingredients");
-
-        setCategories(categoriesRes.data);
+        const ingredientsRes = await getIngredients();
         setIngredients(ingredientsRes.data);
+        const categoriesRes = await getCategories();
+        setCategories(categoriesRes.data);
+
       } catch (error) {
         console.error(error);
       }
@@ -38,6 +40,7 @@ function recipesPage() {
 
     fetchData();
   }, []);
+
 
   const handleSubmit = async (formData) => {
     try {
