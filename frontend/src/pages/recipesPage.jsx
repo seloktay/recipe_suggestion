@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getRecipes } from "../api/recipesApi";
+import { getRecipes, addRecipe } from "../api/recipesApi";
 import { getCategories } from "../api/categoriesApi";
 import { getIngredients } from "../api/ingredientsApi";
 import RecipeModal from "../components/RecipeModal";
@@ -44,13 +44,9 @@ function recipesPage() {
 
   const handleSubmit = async (formData) => {
     try {
-      await axios.post("http://localhost:5000/recipes", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+        addRecipe(formData, headers: {"Content-Type": "multipart/form-data"})
 
-      handleClose(); // close modal after success
+      handleClose();
     } catch (error) {
       console.error(error);
     }

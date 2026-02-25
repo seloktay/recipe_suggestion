@@ -4,11 +4,17 @@ import {
   Box,
   Typography,
   TextField,
+  Autocomplete,
   Button,
   MenuItem,
+  IconButton,
   Select,
   Chip
 } from "@mui/material";
+
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 
 const style = {
   position: "absolute",
@@ -34,25 +40,43 @@ export default function RecipeModal({
   const [cookingTime, setCookingTime] = useState("");
   const [instructions, setInstructions] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedIngredients, setSelectedIngredients] = useState([]);
+  const [ingredientRows, setIngredientRows] = useState([
+    { ingredient: null, quantity: "" }
+  ]);
   const [images, setImages] = useState([]);
 
-  const addIngredient = (id) => {
-    if (!selectedIngredients.find(i => i.id === id)) {
-      setSelectedIngredients([
-        ...selectedIngredients,
-        { id, quantity: "" }
-      ]);
-    }
-  };
+    const MAX_INGREDIENTS = 30;
 
-  const updateQuantity = (id, quantity) => {
-    setSelectedIngredients(prev =>
-      prev.map(item =>
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
-  };
+    const addRow = () => {
+      if (ingredientRows.length < MAX_INGREDIENTS) {
+        setIngredientRows([
+          ...ingredientRows,
+          { ingredient: null, quantity: "" }
+        ]);
+      }
+    };
+
+    const removeRow = (index) => {
+      setIngredientRows(prev =>
+        prev.filter((_, i) => i !== index)
+      );
+    };
+
+    const updateIngredient = (index, value) => {
+      setIngredientRows(prev =>
+        prev.map((row, i) =>
+          i === index ? { ...row, ingredient: value } : row
+        )
+      );
+    };
+
+    const updateQuantity = (index, value) => {
+      setIngredientRows(prev =>
+        prev.map((row, i) =>
+          i === index ? { ...row, quantity: value } : row
+        )
+      );
+    };
 
   const submitRecipe = () => {
     const formData = new FormData();
@@ -65,9 +89,16 @@ export default function RecipeModal({
       JSON.stringify(selectedCategories)
     );
 
+    const formattedIngredients = ingredientRows
+      .filter(row => row.ingredient && row.quantity)
+      .map(row => ({
+        id: row.ingredient.id,
+        quantity: row.quantity
+      }));
+
     formData.append(
       "ingredients",
-      JSON.stringify(selectedIngredients)
+      JSON.stringify(formattedIngredients)
     );
 
     images.forEach(file => {
@@ -134,37 +165,62 @@ export default function RecipeModal({
         </Select>
 
         {/* Ingredients */}
-        <Typography mt={3}>Ingredients</Typography>
+       <Typography mt={3}>Ingredients</Typography>
 
-        <Select
-          fullWidth
-          onChange={(e) => addIngredient(e.target.value)}
-          value=""
-        >
-          {ingredients.map(ingredient => (
-            <MenuItem key={ingredient.id} value={ingredient.id}>
-              {ingredient.name}
-            </MenuItem>
-          ))}
-        </Select>
+       {ingredientRows.map((row, index) => (
+         <Box
+           key={index}
+           sx={{
+             display: "flex",
+             gap: 2,
+             alignItems: "center",
+             mt: 1
+           }}
+         >
+           <Autocomplete
+             sx={{ flex: 2 }}
+             options={ingredients}
+             getOptionLabel={(option) => option.name}
+             value={row.ingredient}
+             onChange={(e, newValue) =>
+               updateIngredient(index, newValue)
+             }
+             renderInput={(params) => (
+               <TextField
+                 {...params}
+                 label="Ingredient"
+               />
+             )}
+             filterSelectedOptions
+           />
+            <TextField
+              sx={{ flex: 1 }}
+              label="Amount"
+              value={row.quantity}
+              onChange={(e) =>
+                updateQuantity(index, e.target.value)
+              }
+            />
 
-        {selectedIngredients.map(item => {
-          const ingredient = ingredients.find(i => i.id === item.id);
+            <IconButton
+              color="error"
+              onClick={() => removeRow(index)}
+              disabled={ingredientRows.length === 1}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        ))}
 
-          return (
-            <Box key={item.id} mt={1}>
-              <Typography>{ingredient?.name}</Typography>
-              <TextField
-                label="Quantity"
-                fullWidth
-                value={item.quantity}
-                onChange={(e) =>
-                  updateQuantity(item.id, e.target.value)
-                }
-              />
-            </Box>
-          );
-        })}
+        <Box mt={2}>
+          <IconButton
+            color="primary"
+            onClick={addRow}
+            disabled={ingredientRows.length >= MAX_INGREDIENTS}
+          >
+            <AddIcon />
+          </IconButton>
+        </Box>
 
         {/* Images */}
         <Typography mt={3}>Images</Typography>
