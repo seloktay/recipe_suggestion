@@ -44,7 +44,7 @@ function recipesPage() {
 
   const handleSubmit = async (formData) => {
     try {
-        addRecipe(formData, headers: {"Content-Type": "multipart/form-data"})
+        addRecipe(formData)
 
       handleClose();
     } catch (error) {
