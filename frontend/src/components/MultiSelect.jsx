@@ -2,15 +2,7 @@ import { useState, useEffect } from "react";
 import { getIngredients } from "../api/ingredientsApi";
 
 function MultiSelect({ selected, setSelected }) {
-    const [ingredients, setIngredients] = useState([]);
-    useEffect(() => {
-           const loadIngredients = async () => {
-               const res = await getIngredients();
-               console.log
-               setIngredients(res.data);
-           };
-           loadIngredients()
-        }, [])
+
 
   const [query, setQuery] = useState("");
 
