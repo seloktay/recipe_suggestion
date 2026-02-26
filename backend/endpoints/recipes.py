@@ -2,6 +2,7 @@ from flask import Blueprint
 from database.extensions import db
 from database.models import Recipe, Ingredient, Category, RecipeIngredient, CategoryType, RecipeImage
 from sqlalchemy.orm import selectinload
+from sqlalchemy import func
 import uuid
 import os
 from flask import request, jsonify, current_app
@@ -151,3 +152,43 @@ def delete_recipe(recipe_id):
     db.session.commit()
     return jsonify({"message": "Recipe deleted"})
 
+
+@recipes_bp.get("/search_by_ingredient/")
+def search_recipes_by_ingredient():
+    try:
+        data = request.get_json()
+        ingredients = data["ingredients"]
+        search_mode = data["search_mode"].lower() #enum: strict, flexible
+        if search_mode == "strict":
+            query = Recipe.query
+            for ing_id in ingredients:
+                query = query.filter(
+                    Recipe.recipe_ingredients.any(RecipeIngredient.ingredient_id == ing_id)
+                )
+            recipes = query.all()
+        elif search_mode == "flexible":
+            recipes = Recipe.query.filter(
+                RecipeIngredient.ingredient_id.in_(ingredients)
+            ).all()
+        else:
+            return jsonify({"message": "Search Mode Options: flexible, strict"})
+        # shouldnt have ingredients besides the specified one(s)
+        # must use one or more of the specified one(s)
+        result = [
+            {
+                "id": r.id,
+                "cooking_time": r.cooking_time,
+                "name": r.name,
+                "images": [img.image_path for img in r.images],
+                "categories": [c.name for c in r.categories],
+                "ingredients": [{
+                    "id": i.ingredient_id,
+                    "name": i.ingredient.name,
+                    "quantity": i.quantity
+                } for i in r.recipe_ingredients]
+            }
+            for r in recipes
+        ]
+        return jsonify(result)
+    except Exception as e:
+        print(e)
