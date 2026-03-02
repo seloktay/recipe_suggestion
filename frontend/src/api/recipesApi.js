@@ -10,3 +10,6 @@ export const updateRecipe = (id, data) =>
 
 export const deleteRecipe = (id) =>
   api.delete(`/recipes/${id}`);
+
+  export const searchRecipes = (data) =>
+    api.post("/recipes/search_by_ingredient/", data)

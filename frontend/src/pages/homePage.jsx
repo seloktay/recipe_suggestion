@@ -1,20 +1,27 @@
 import { useEffect, useState } from "react";
 import MultiSelect from "../components/MultiSelect";
 import { getIngredients } from "../api/ingredientsApi";
+import { searchRecipes } from "../api/recipesApi"
 import { Autocomplete, TextField } from "@mui/material";
 
 function HomePage() {
   const [selectedIngredients, setSelectedIngredients] = useState([]);
-  const handleSearch = () => {
-    console.log("Selected:", selectedIngredients);
-    // Later: call backend here
+
+  const [matchedRecipes, setMatchedRecipes] = useState([]);
+  const handleSearch = async () => {
+      const ingredient_id_list = selectedIngredients.map(ing => ing.id)
+      const data = {
+          "ingredients": ingredient_id_list,
+          "search_mode": "strict"
+          }
+    const res = await searchRecipes(data);
+    setMatchedRecipes(res.data);
   };
 
   const [ingredients, setIngredients] = useState([]);
   useEffect(() => {
          const loadIngredients = async () => {
              const res = await getIngredients();
-             console.log
              setIngredients(res.data);
          };
          loadIngredients()

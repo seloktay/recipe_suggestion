@@ -153,12 +153,12 @@ def delete_recipe(recipe_id):
     return jsonify({"message": "Recipe deleted"})
 
 
-@recipes_bp.get("/search_by_ingredient/")
+@recipes_bp.post("/search_by_ingredient/")
 def search_recipes_by_ingredient():
     try:
         data = request.get_json()
         ingredients = data["ingredients"]
-        search_mode = data["search_mode"].lower() #enum: strict, flexible
+        search_mode = data.get("search_mode", "strict").lower() #enum: strict, flexible
         if search_mode == "strict":
             query = Recipe.query
             for ing_id in ingredients:
