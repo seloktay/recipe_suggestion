@@ -23,7 +23,7 @@ function HomePage() {
       const ingredient_id_list = selectedIngredients.map(ing => ing.id)
       const data = {
           "ingredients": ingredient_id_list,
-          "search_mode": "strict"
+          "search_mode": searchMode
       }
     const res = await searchRecipes(data);
     setMatchedRecipes(res.data);
