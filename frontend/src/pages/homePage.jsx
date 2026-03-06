@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import MultiSelect from "../components/MultiSelect";
+import RecipeCard from "../components/RecipeCard";
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -77,6 +78,11 @@ function HomePage() {
     >
       Search Recipes
     </button>
+    <div>
+      {matchedRecipes.map(r => (
+        <RecipeCard key={r.id} recipe={r} />
+      ))}
+    </div>
     </div>
   );
 }
