@@ -1,0 +1,7 @@
+#ingredient-filter .MuiOutlinedInput-root {
+  background-color: pink;
+}
+
+#ingredient-filter .MuiOutlinedInput-notchedOutline {
+  border-color: white;
+}

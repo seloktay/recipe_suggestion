@@ -9,6 +9,7 @@ import Select from '@mui/material/Select';
 import { getIngredients } from "../api/ingredientsApi";
 import { searchRecipes } from "../api/recipesApi"
 import { Autocomplete, TextField } from "@mui/material";
+import "../styles/homePage.css";
 
 function HomePage() {
   const [selectedIngredients, setSelectedIngredients] = useState([]);
