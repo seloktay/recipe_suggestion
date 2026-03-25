@@ -47,10 +47,10 @@ class RecipeImage(db.Model):
     __tablename__ = "recipe_images"
 
     id = db.Column(db.Integer, primary_key=True)
-    recipe_id = db.Column(db.Integer, db.ForeignKey("recipe.id"), nullable=False)
+    recipe_id = db.Column(db.Integer, db.ForeignKey("recipe.id"), nullable=False, unique=True)
     image_path = db.Column(db.String(255), nullable=False)
 
-    recipe = db.relationship("Recipe", back_populates="images")
+    recipe = db.relationship("Recipe", back_populates="image")
 
 
 class Recipe(db.Model):
@@ -72,10 +72,11 @@ class Recipe(db.Model):
         cascade="all, delete-orphan"
     )
 
-    images = db.relationship(
+    image = db.relationship(
         "RecipeImage",
         back_populates="recipe",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        uselist=False
     )
 
     categories = db.relationship(

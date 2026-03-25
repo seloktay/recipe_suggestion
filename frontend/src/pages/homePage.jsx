@@ -28,6 +28,7 @@ function HomePage() {
       }
     const res = await searchRecipes(data);
     setMatchedRecipes(res.data);
+    console.log(res.data)
   };
 
   useEffect(() => {

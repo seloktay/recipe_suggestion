@@ -14,13 +14,13 @@ recipes_bp = Blueprint("recipes", __name__, url_prefix="/recipes")
 
 @recipes_bp.get("/")
 def list_recipes():
-    recipes = Recipe.query.options(selectinload(Recipe.images)).all()
+    recipes = Recipe.query.options(selectinload(Recipe.image)).all()
     result = [
         {
             "id": r.id,
             "cooking_time": r.cooking_time,
             "name": r.name,
-            "images": [img.image_path for img in r.images],
+            "image": r.image.image_path,
             "categories": [c.name for c in r.categories],
             "ingredients": [{
                 "name": i.ingredient.name,
@@ -84,9 +84,7 @@ def create_recipe():
         filepath = os.path.join(upload_folder, unique_filename)
 
         file.save(filepath)
-        recipe.images.append(
-            RecipeImage(image_path=f"/uploads/{unique_filename}")
-        )
+        recipe.image = RecipeImage(image_path=f"/uploads/{unique_filename}")
 
     db.session.commit()
 
@@ -106,7 +104,7 @@ def create_recipe():
                 "quantity": i.quantity
             } for i in recipe.recipe_ingredients
         ]
-    }), 201
+    }), 200
 
 @recipes_bp.route("/<recipe_id>", methods=["PUT"])
 def update_recipe(recipe_id):
@@ -172,14 +170,14 @@ def search_recipes_by_ingredient():
             ).all()
         else:
             return jsonify({"message": "Search Mode Options: flexible, strict"})
-        # shouldnt have ingredients besides the specified one(s)
+        # shouldn't have ingredients besides the specified one(s)
         # must use one or more of the specified one(s)
         result = [
             {
                 "id": r.id,
                 "cooking_time": r.cooking_time,
                 "name": r.name,
-                "images": [img.image_path for img in r.images],
+                "image": r.image.image_path,
                 "categories": [c.name for c in r.categories],
                 "ingredients": [{
                     "id": i.ingredient_id,

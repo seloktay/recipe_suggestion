@@ -22,6 +22,11 @@ function RecipeCard({recipe}) {
     )
     return (
         <Card sx={{ minWidth: 275 }}>
+          <CardMedia
+            sx={{ height: 140 }}
+            image={recipe.image}
+            title="green iguana"
+          />
           <CardContent>
             <Box>
                 {categoryBoxes}

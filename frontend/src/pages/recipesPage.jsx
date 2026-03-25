@@ -44,7 +44,8 @@ function recipesPage() {
 
   const handleSubmit = async (formData) => {
     try {
-        addRecipe(formData)
+        await addRecipe(formData);
+        await loadRecipes();
 
       handleClose();
     } catch (error) {
